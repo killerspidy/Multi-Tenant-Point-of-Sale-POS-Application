@@ -21,6 +21,16 @@ import PromotionsPage from '@/pages/Promotions/PromotionsPage';
 import StoresPage from '@/pages/Stores/StoresPage';
 import AuditLogsPage from '@/pages/AuditLogs/AuditLogsPage';
 import UserManagementPage from '@/pages/UserManagement/UserManagementPage';
+import SubscriptionPage from '@/pages/Subscription/SubscriptionPage';
+import BrandingPage from '@/pages/Settings/BrandingPage';
+import AutomationRulesPage from '@/pages/Inventory/AutomationRulesPage';
+import AnalyticsDashboardPage from '@/pages/Reports/AnalyticsDashboardPage';
+import UserProfilePage from '@/pages/Settings/UserProfilePage';
+import StoreManagerDashboard from '@/pages/Dashboard/StoreManagerDashboard';
+import HRManagementPage from '@/pages/HR/HRManagementPage';
+import HeldOrdersPage from '@/pages/POS/HeldOrdersPage';
+import LabelPrinterPage from '@/pages/Inventory/LabelPrinterPage';
+import PurchaseRequisitionPage from '@/pages/Procurement/PurchaseRequisitionPage';
 
 // Main app layout
 import MainAppLayout from '@/components/layouts/app/MainAppLayout';
@@ -211,6 +221,117 @@ export function AppRouter() {
                         <ProtectedRoute>
                             <MainAppLayout>
                                 <UserManagementPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/subscription"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <SubscriptionPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/branding"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <BrandingPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/automation-rules"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <AutomationRulesPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/analytics"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <AnalyticsDashboardPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <UserProfilePage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Advanced POS Features */}
+                <Route
+                    path="/pos/held-orders"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <HeldOrdersPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Advanced Inventory */}
+                <Route
+                    path="/inventory/labels"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <LabelPrinterPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Advanced Procurement */}
+                <Route
+                    path="/procurement/requisition"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <PurchaseRequisitionPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Advanced Dashboards */}
+                <Route
+                    path="/dashboard/store-manager"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <StoreManagerDashboard />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* HR & Payroll */}
+                <Route
+                    path="/hr"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <HRManagementPage />
                             </MainAppLayout>
                         </ProtectedRoute>
                     }

@@ -10,11 +10,11 @@ export default function MainAppLayout({ children }: MainAppLayoutProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-background">
-            <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
-            <div className="flex">
-                <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-                <main className="flex-1 p-6 md:ml-64">
+        <div className="flex min-h-screen bg-background">
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <div className="flex-1 flex flex-col min-w-0">
+                <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+                <main className="flex-1 p-6 overflow-y-auto">
                     <div className="max-w-7xl mx-auto">
                         {children}
                     </div>

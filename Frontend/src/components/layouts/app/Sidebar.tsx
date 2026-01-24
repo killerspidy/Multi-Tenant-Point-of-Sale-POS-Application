@@ -123,7 +123,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Sidebar */}
             <aside
                 className={cn(
-                    'fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r bg-background transition-transform duration-300 md:sticky md:translate-x-0',
+                    'fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background transition-transform duration-300 md:sticky md:translate-x-0',
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 )}
             >
