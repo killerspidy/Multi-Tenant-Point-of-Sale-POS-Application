@@ -22,8 +22,15 @@ import {
 
 interface SidebarProps {
     isOpen: boolean;
+    isDesktopOpen?: boolean;
     onClose: () => void;
 }
+
+// ... existing NavItem interface ...
+// The rest of the file content until the component definition...
+
+// NOTE: Please ensure the imports and NavItem defs above are preserved by using context matching or ensure this chunk includes them if needed. 
+// Since replace_file_content replaces the chunk, I will include the interface and component start.
 
 interface NavItem {
     title: string;
@@ -38,6 +45,7 @@ const navItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutDashboard,
     },
+    // ... items ...
     {
         title: 'POS',
         href: '/pos',
@@ -99,9 +107,11 @@ const navItems: NavItem[] = [
     },
 ];
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, isDesktopOpen = true, onClose }: SidebarProps) {
     const location = useLocation();
     const { user } = useAuth();
+
+    // ... existing logic ...
 
     const hasAccess = (item: NavItem) => {
         if (!item.roles) return true;
@@ -123,28 +133,35 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Sidebar */}
             <aside
                 className={cn(
-                    'fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background transition-transform duration-300 md:sticky md:translate-x-0',
-                    isOpen ? 'translate-x-0' : '-translate-x-full'
+                    'fixed left-0 top-0 z-40 h-screen border-r bg-background transition-all duration-300 md:sticky flex flex-col',
+                    isOpen ? 'translate-x-0' : '-translate-x-full',
+                    'md:translate-x-0',
+                    isDesktopOpen ? 'w-64' : 'w-64 md:w-20'
                 )}
             >
-                <ScrollArea className="h-full py-6">
-                    {/* Logo/Brand */}
-                    <div className="px-6 mb-6">
-                        <Link to="/dashboard" className="flex items-center gap-2">
-                            <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-                                <ShoppingCart className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold">POS Master</h2>
-                                <p className="text-xs text-muted-foreground">Multi-Tenant POS</p>
-                            </div>
-                        </Link>
-                    </div>
+                {/* Logo/Brand Header - Aligned with Main Header */}
+                <div className={cn(
+                    "h-16 flex items-center border-b transition-all duration-300",
+                    isDesktopOpen ? "px-6" : "justify-center px-2"
+                )}>
+                    <Link to="/dashboard" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                        <div className="bg-primary text-primary-foreground p-2 rounded-lg flex-shrink-0">
+                            <ShoppingCart className="w-5 h-5" />
+                        </div>
+                        <div className={cn(
+                            "transition-all duration-300",
+                            isDesktopOpen ? "opacity-100 w-auto" : "opacity-0 w-0 hidden"
+                        )}>
+                            <h2 className="text-lg font-bold">POS Master</h2>
+                            <p className="text-xs text-muted-foreground">Multi-Tenant POS</p>
+                        </div>
+                    </Link>
+                </div>
 
-                    <Separator className="mb-4" />
+                <ScrollArea className="flex-1 py-4">
 
                     {/* Navigation */}
-                    <nav className="space-y-1 px-3">
+                    <nav className={cn("space-y-1 transition-all duration-300", isDesktopOpen ? "px-3" : "px-2")}>
                         {filteredNavItems.map((item) => {
                             const isActive = location.pathname === item.href;
                             const Icon = item.icon;
@@ -154,12 +171,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     <Button
                                         variant={isActive ? 'secondary' : 'ghost'}
                                         className={cn(
-                                            'w-full justify-start gap-3',
+                                            'w-full gap-3 transition-all duration-300 mb-1',
+                                            isDesktopOpen ? "justify-start" : "justify-center px-2",
                                             isActive && 'bg-primary/10 text-primary hover:bg-primary/20'
                                         )}
+                                        title={!isDesktopOpen ? item.title : undefined}
                                     >
-                                        <Icon className="h-5 w-5" />
-                                        <span>{item.title}</span>
+                                        <Icon className="h-5 w-5 flex-shrink-0" />
+                                        <span className={cn(
+                                            "transition-all duration-300 overflow-hidden whitespace-nowrap",
+                                            isDesktopOpen ? "opacity-100 w-auto" : "opacity-0 w-0 hidden"
+                                        )}>
+                                            {item.title}
+                                        </span>
                                     </Button>
                                 </Link>
                             );
@@ -167,7 +191,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </nav>
 
                     {/* Footer Info */}
-                    <div className="absolute bottom-4 left-0 right-0 px-6">
+                    <div className={cn(
+                        "absolute bottom-4 left-0 right-0 px-6 transition-all duration-300",
+                        isDesktopOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                    )}>
                         <div className="bg-muted rounded-lg p-3 text-xs">
                             <p className="font-semibold mb-1">Tenant ID</p>
                             <p className="text-muted-foreground truncate">{user?.tenantId}</p>

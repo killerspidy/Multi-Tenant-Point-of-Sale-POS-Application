@@ -56,11 +56,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-16 items-center gap-4 px-4">
-                {/* Mobile Menu Button */}
+                {/* Menu Button - Visible on both Mobile and Desktop */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden"
+                    className="mr-2"
                     onClick={onMenuClick}
                 >
                     <Menu className="h-5 w-5" />
