@@ -232,7 +232,66 @@ export const mockProducts: Product[] = [
         unit: 'pack',
         status: 'active',
         image: 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=200',
+        type: 'simple'
     },
+    // Variable Product
+    {
+        id: '14',
+        sku: 'CLOTH-001',
+        name: 'Cotton T-Shirt',
+        description: 'Premium cotton t-shirt in various sizes',
+        category: 'Clothing',
+        brand: 'FashionHub',
+        price: 19.99,
+        costPrice: 8.00,
+        stock: 100, // Total stock
+        reorderLevel: 10,
+        barcode: '1234567890136',
+        taxRate: 5,
+        unit: 'piece',
+        status: 'active',
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200',
+        type: 'variable',
+        attributes: [
+            { name: 'Size', options: ['S', 'M', 'L', 'XL'] },
+            { name: 'Color', options: ['Black', 'White'] }
+        ],
+        variations: [
+            {
+                id: '14-S-BLK',
+                parentId: '14',
+                sku: 'CLOTH-001-S-BLK',
+                price: 19.99,
+                stock: 20,
+                attributes: { 'Size': 'S', 'Color': 'Black' }
+            },
+            {
+                id: '14-M-BLK',
+                parentId: '14',
+                sku: 'CLOTH-001-M-BLK',
+                price: 19.99,
+                stock: 30,
+                attributes: { 'Size': 'M', 'Color': 'Black' }
+            },
+            {
+                id: '14-L-BLK',
+                parentId: '14',
+                sku: 'CLOTH-001-L-BLK',
+                price: 21.99, // Large is more expensive
+                stock: 25,
+                attributes: { 'Size': 'L', 'Color': 'Black' }
+            },
+            {
+                id: '14-S-WHT',
+                parentId: '14',
+                sku: 'CLOTH-001-S-WHT',
+                price: 19.99,
+                stock: 15,
+                attributes: { 'Size': 'S', 'Color': 'White' },
+                image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=200'
+            }
+        ]
+    }
 ];
 
 export const getProductById = (id: string): Product | undefined => {

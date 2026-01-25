@@ -22,7 +22,30 @@ import { toast } from 'sonner';
 export default function ProductDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const product = mockProducts.find(p => p.id === id) || mockProducts[0];
+
+    // Determine if we are in "create" mode
+    const isNew = id === 'new';
+
+    // Fallback or empty default
+    const defaultProduct: any = {
+        name: '',
+        sku: '',
+        barcode: '',
+        category: '',
+        brand: '',
+        description: '',
+        price: '0.00',
+        costPrice: '0.00',
+        taxRate: '0.00',
+        stock: '0',
+        reorderLevel: '0',
+        unit: 'piece',
+        status: 'active'
+    };
+
+    const product = isNew
+        ? defaultProduct
+        : (mockProducts.find(p => p.id === id) || defaultProduct);
 
     const [formData, setFormData] = useState({
         name: product.name,
@@ -31,23 +54,26 @@ export default function ProductDetailPage() {
         category: product.category,
         brand: product.brand,
         description: product.description,
-        price: product.price.toString(),
-        costPrice: product.costPrice.toString(),
-        taxRate: product.taxRate.toString(),
-        stock: product.stock.toString(),
-        reorderLevel: product.reorderLevel.toString(),
-        unit: product.unit,
-        status: product.status,
+        price: product.price?.toString() || '0',
+        costPrice: product.costPrice?.toString() || '0',
+        taxRate: product.taxRate?.toString() || '0',
+        stock: product.stock?.toString() || '0',
+        reorderLevel: product.reorderLevel?.toString() || '0',
+        unit: product.unit || 'piece',
+        status: product.status || 'active',
     });
 
-    const [variants, setVariants] = useState([
-        { id: '1', name: 'Small', sku: 'ELEC-001-S', price: 27.99, stock: 15 },
-        { id: '2', name: 'Medium', sku: 'ELEC-001-M', price: 29.99, stock: 25 },
-        { id: '3', name: 'Large', sku: 'ELEC-001-L', price: 32.99, stock: 10 },
-    ]);
+    const [variants, setVariants] = useState<any[]>(
+        isNew ? [] : [
+            { id: '1', name: 'Small', sku: 'ELEC-001-S', price: 27.99, stock: 15 },
+            { id: '2', name: 'Medium', sku: 'ELEC-001-M', price: 29.99, stock: 25 },
+            { id: '3', name: 'Large', sku: 'ELEC-001-L', price: 32.99, stock: 10 },
+        ]
+    );
 
     const handleSave = () => {
-        toast.success('Product updated successfully!');
+        toast.success(isNew ? 'Product created successfully!' : 'Product updated successfully!');
+        navigate('/products');
     };
 
     const addVariant = () => {
@@ -73,15 +99,15 @@ export default function ProductDetailPage() {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold">Product Details</h1>
-                        <p className="text-muted-foreground">Edit product information and variants</p>
+                        <h1 className="text-3xl font-bold">{isNew ? 'Create Product' : 'Edit Product'}</h1>
+                        <p className="text-muted-foreground">{isNew ? 'Add a new product to your catalog' : 'Edit product information and variants'}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline">Delete</Button>
                     <Button onClick={handleSave}>
                         <Save className="mr-2 h-4 w-4" />
-                        Save Changes
+                        {isNew ? 'Create Product' : 'Save Changes'}
                     </Button>
                 </div>
             </div>

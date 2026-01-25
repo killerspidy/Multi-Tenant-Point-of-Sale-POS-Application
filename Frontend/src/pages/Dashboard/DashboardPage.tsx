@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useData } from '@/contexts/DataContext';
 import {
     TrendingUp,
     DollarSign,
@@ -19,57 +20,62 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-
-const salesData = [
-    { date: 'Mon', revenue: 4200 },
-    { date: 'Tue', revenue: 3800 },
-    { date: 'Wed', revenue: 5100 },
-    { date: 'Thu', revenue: 4600 },
-    { date: 'Fri', revenue: 6200 },
-    { date: 'Sat', revenue: 7800 },
-    { date: 'Sun', revenue: 5400 },
-];
+import { format, subDays, isSameDay } from 'date-fns';
 
 export default function DashboardPage() {
     const { user } = useAuth();
+    const { transactions, products, getDashboardStats } = useData();
+    const dashboardStats = getDashboardStats();
+
+    // Calculate Sales Data for Chart (Last 7 Days)
+    const salesData = Array.from({ length: 7 }).map((_, i) => {
+        const date = subDays(new Date(), 6 - i);
+        const dailyRevenue = transactions
+            .filter(t => isSameDay(new Date(t.createdAt), date))
+            .reduce((sum, t) => sum + t.total, 0);
+        return {
+            date: format(date, 'EEE'),
+            revenue: dailyRevenue
+        };
+    });
 
     const stats = [
         {
             title: 'Total Revenue',
-            value: '$45,231.89',
-            change: '+20.1%',
+            value: `$${dashboardStats.totalRevenue.toFixed(2)}`,
+            change: '+20.1%', // Pending historical comparison logic
             trend: 'up',
             icon: DollarSign,
         },
         {
             title: 'Transactions',
-            value: '2,350',
+            value: dashboardStats.totalOrders.toString(),
             change: '+180',
             trend: 'up',
             icon: ShoppingCart,
         },
         {
             title: 'Products',
-            value: '1,234',
+            value: products.length.toString(),
             change: '+12',
             trend: 'up',
             icon: Package,
         },
         {
-            title: 'Customers',
-            value: '573',
+            title: 'Low Stock Items',
+            value: dashboardStats.lowStockCount.toString(),
             change: '-3',
             trend: 'down',
-            icon: Users,
+            icon: Users, // Should ideally switch icon to alert, but keeping structure for now
         },
     ];
 
-    const recentActivity = [
-        { id: 1, action: 'New sale', amount: '$125.00', time: '2 minutes ago' },
-        { id: 2, action: 'Product added', amount: 'SKU-1234', time: '15 minutes ago' },
-        { id: 3, action: 'Customer registered', amount: 'John Doe', time: '1 hour ago' },
-        { id: 4, action: 'Stock updated', amount: '50 items', time: '2 hours ago' },
-    ];
+    const recentActivity = transactions.slice(0, 5).map(t => ({
+        id: t.id,
+        action: 'New sale',
+        amount: `$${t.total.toFixed(2)}`,
+        time: format(new Date(t.createdAt), 'h:mm a')
+    }));
 
     return (
         <div className="space-y-6 animate-fade-in">

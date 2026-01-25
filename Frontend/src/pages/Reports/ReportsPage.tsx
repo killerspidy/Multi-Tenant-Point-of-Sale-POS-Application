@@ -126,49 +126,104 @@ export default function ReportsPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <FileText className="h-5 w-5" />
-                        Sales Report - Last 7 Days
+                        {reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report
                     </CardTitle>
-                    <CardDescription>Detailed transaction breakdown</CardDescription>
+                    <CardDescription>Detailed breakdown for selected category</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Invoice #</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Items</TableHead>
-                                <TableHead>Payment</TableHead>
-                                <TableHead>Total</TableHead>
-                                <TableHead>Status</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {mockTransactions.map((transaction) => (
-                                <TableRow key={transaction.id}>
-                                    <TableCell className="font-mono text-sm">
-                                        {transaction.invoiceNumber}
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(transaction.date).toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell>{transaction.customerName || 'Walk-in'}</TableCell>
-                                    <TableCell>{transaction.items.length} items</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">{transaction.paymentMethod.toUpperCase()}</Badge>
-                                    </TableCell>
-                                    <TableCell className="font-semibold">
-                                        ${transaction.total.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
-                                            {transaction.status}
-                                        </Badge>
-                                    </TableCell>
+                    {reportType === 'sales' && (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Invoice #</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Items</TableHead>
+                                    <TableHead>Payment</TableHead>
+                                    <TableHead>Total</TableHead>
+                                    <TableHead>Status</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {mockTransactions.map((transaction) => (
+                                    <TableRow key={transaction.id}>
+                                        <TableCell className="font-mono text-sm">
+                                            {transaction.invoiceNumber}
+                                        </TableCell>
+                                        <TableCell>
+                                            {new Date(transaction.date).toLocaleDateString()}
+                                        </TableCell>
+                                        <TableCell>{transaction.customerName || 'Walk-in'}</TableCell>
+                                        <TableCell>{transaction.items.length} items</TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline">{transaction.paymentMethod.toUpperCase()}</Badge>
+                                        </TableCell>
+                                        <TableCell className="font-semibold">
+                                            ${transaction.total.toFixed(2)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
+                                                {transaction.status}
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
+
+                    {reportType === 'inventory' && (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Product Name</TableHead>
+                                    <TableHead>SKU</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead>Stock Level</TableHead>
+                                    <TableHead>Value</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>Wireless Mouse</TableCell>
+                                    <TableCell className="font-mono text-sm">WM-001</TableCell>
+                                    <TableCell>Electronics</TableCell>
+                                    <TableCell>45</TableCell>
+                                    <TableCell>$1,125.00</TableCell>
+                                    <TableCell><Badge>In Stock</Badge></TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Bluetooth Speaker</TableCell>
+                                    <TableCell className="font-mono text-sm">BS-002</TableCell>
+                                    <TableCell>Electronics</TableCell>
+                                    <TableCell>12</TableCell>
+                                    <TableCell>$600.00</TableCell>
+                                    <TableCell><Badge variant="secondary">Low Stock</Badge></TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>USB-C Cable</TableCell>
+                                    <TableCell className="font-mono text-sm">CB-003</TableCell>
+                                    <TableCell>Accessories</TableCell>
+                                    <TableCell>120</TableCell>
+                                    <TableCell>$600.00</TableCell>
+                                    <TableCell><Badge>In Stock</Badge></TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    )}
+
+                    {reportType === 'customer' && (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <p>Customer acquisition and behavior report generation...</p>
+                        </div>
+                    )}
+
+                    {reportType === 'tax' && (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <p>Tax liability and collection report generation...</p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

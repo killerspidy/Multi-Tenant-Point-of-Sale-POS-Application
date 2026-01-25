@@ -13,10 +13,23 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Plus, Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
 export default function ProcurementPage() {
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [showSupplierDialog, setShowSupplierDialog] = useState(false);
+    const [status] = useState('active'); // Mock status for form
 
     const purchaseOrders = [
         { id: 'PO-001', supplier: 'Tech Supplies Inc', items: 5, total: 1250.00, status: 'pending', date: '2026-01-23' },
@@ -54,11 +67,11 @@ export default function ProcurementPage() {
                     <p className="text-muted-foreground">Manage suppliers and purchase orders</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setShowSupplierDialog(true)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Add Supplier
                     </Button>
-                    <Button>
+                    <Button onClick={() => navigate('/procurement/requisition')}>
                         <Plus className="mr-2 h-4 w-4" />
                         New Purchase Order
                     </Button>
@@ -159,6 +172,14 @@ export default function ProcurementPage() {
                                             <TableCell>{getStatusBadge(po.status)}</TableCell>
                                             <TableCell className="text-right">
                                                 <Button size="sm" variant="ghost">View</Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    className="ml-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                    onClick={() => navigate('/procurement/goods-receipt')}
+                                                >
+                                                    Receive
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -207,6 +228,50 @@ export default function ProcurementPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+            {/* Add Supplier Dialog */}
+            <Dialog open={showSupplierDialog} onOpenChange={setShowSupplierDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add New Supplier</DialogTitle>
+                        <DialogDescription>Enter supplier details to add them to your directory</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Supplier Name *</Label>
+                            <Input placeholder="e.g. Global Tech Supplies" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Contact Person</Label>
+                                <Input placeholder="e.g. John Doe" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Phone</Label>
+                                <Input placeholder="+1..." />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input type="email" placeholder="contact@supplier.com" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Address</Label>
+                            <Input placeholder="Business address" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Payment Terms</Label>
+                            <Input placeholder="e.g. Net 30, COD" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowSupplierDialog(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                            toast.success('Supplier added successfully');
+                            setShowSupplierDialog(false);
+                        }}>Add Supplier</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

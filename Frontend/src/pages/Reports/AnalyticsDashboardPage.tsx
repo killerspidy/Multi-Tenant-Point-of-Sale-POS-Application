@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
 export default function AnalyticsDashboardPage() {
     const inventoryData = [
@@ -24,6 +24,16 @@ export default function AnalyticsDashboardPage() {
         { name: 'VIP', value: 25, color: '#FFBB28' },
     ];
 
+    const salesTrendData = [
+        { date: 'Jan', sales: 4000, profit: 2400 },
+        { date: 'Feb', sales: 3000, profit: 1398 },
+        { date: 'Mar', sales: 2000, profit: 9800 },
+        { date: 'Apr', sales: 2780, profit: 3908 },
+        { date: 'May', sales: 1890, profit: 4800 },
+        { date: 'Jun', sales: 2390, profit: 3800 },
+        { date: 'Jul', sales: 3490, profit: 4300 },
+    ];
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -35,10 +45,33 @@ export default function AnalyticsDashboardPage() {
 
             <Tabs defaultValue="inventory">
                 <TabsList>
+                    <TabsTrigger value="sales">Sales Performance</TabsTrigger>
                     <TabsTrigger value="inventory">Inventory Health</TabsTrigger>
                     <TabsTrigger value="customers">Customer Insights</TabsTrigger>
                     <TabsTrigger value="performance">Staff Performance</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="sales" className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Sales & Profit Trend</CardTitle>
+                            <CardDescription>Performance over the last 6 months</CardDescription>
+                        </CardHeader>
+                        <CardContent className="h-[400px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={salesTrendData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="date" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="sales" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                    <Line type="monotone" dataKey="profit" stroke="#82ca9d" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
                 <TabsContent value="inventory" className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">

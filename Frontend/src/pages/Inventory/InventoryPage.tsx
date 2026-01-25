@@ -12,20 +12,79 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { mockProducts, getLowStockProducts } from '@/mocks/data/products';
-import { Search, Plus, AlertTriangle, TrendingDown, TrendingUp, Package } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Search, AlertTriangle, TrendingDown, TrendingUp, Package } from 'lucide-react';
 import { toast } from 'sonner';
+import { useData } from '@/contexts/DataContext';
 
 export default function InventoryPage() {
+    const { products, updateProductStock } = useData(); // Use Dynamic Data
     const [searchQuery, setSearchQuery] = useState('');
-    const lowStockProducts = getLowStockProducts();
 
-    const totalValue = mockProducts.reduce((sum, p) => sum + (p.costPrice * p.stock), 0);
-    const totalItems = mockProducts.reduce((sum, p) => sum + p.stock, 0);
+    // Derived state from dynamic products
+    const lowStockProducts = products.filter(p => p.stock <= p.reorderLevel);
 
-    const handleStockAdjustment = (productId: string, type: 'add' | 'remove') => {
-        toast.success(`Stock ${type === 'add' ? 'added' : 'removed'} successfully`);
+    const [showTransferDialog, setShowTransferDialog] = useState(false);
+    const [showAdjustmentDialog, setShowAdjustmentDialog] = useState(false);
+    const [adjustmentType, setAdjustmentType] = useState<'add' | 'remove'>('add');
+    const [selectedProductForTransfer, setSelectedProductForTransfer] = useState<string | null>(null);
+    const [selectedProductForAdjustment, setSelectedProductForAdjustment] = useState<string | null>(null);
+    const [adjustmentQty, setAdjustmentQty] = useState('');
+
+    // Mock Location Data
+    const locations = ['Warehouse', 'Main Store', 'Downtown Branch'];
+    // Mock Stock Distribution Generator (Visual only for now since we don't have location-stock model yet)
+    const getStockByLocation = (totalStock: number) => {
+        const warehouse = Math.floor(totalStock * 0.6);
+        const mainStore = Math.floor(totalStock * 0.3);
+        const downtown = totalStock - warehouse - mainStore;
+        return { Warehouse: warehouse, 'Main Store': mainStore, 'Downtown Branch': downtown };
     };
+
+    const totalValue = products.reduce((sum, p) => sum + (p.costPrice * p.stock), 0);
+    const totalItems = products.reduce((sum, p) => sum + p.stock, 0);
+
+    const handleStockAdjustment = () => {
+        if (!selectedProductForAdjustment) return;
+
+        const qty = parseInt(adjustmentQty);
+        if (isNaN(qty) || qty <= 0) {
+            toast.error('Invalid quantity');
+            return;
+        }
+
+        const change = adjustmentType === 'add' ? qty : -qty;
+        updateProductStock(selectedProductForAdjustment, change);
+
+        toast.success(`Stock ${adjustmentType === 'add' ? 'added' : 'removed'} successfully`);
+        setShowAdjustmentDialog(false);
+        setAdjustmentQty('');
+    };
+
+    // Filter products for display
+    const filteredProducts = products.filter(p => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+            p.name.toLowerCase().includes(query) ||
+            p.sku.toLowerCase().includes(query)
+        );
+    });
 
     return (
         <div className="space-y-6">
@@ -84,7 +143,7 @@ export default function InventoryPage() {
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{new Set(mockProducts.map(p => p.category)).size}</div>
+                        <div className="text-2xl font-bold">{new Set(products.map(p => p.category)).size}</div>
                         <p className="text-xs text-muted-foreground">Active categories</p>
                     </CardContent>
                 </Card>
@@ -95,8 +154,61 @@ export default function InventoryPage() {
                 <TabsList>
                     <TabsTrigger value="all">All Stock</TabsTrigger>
                     <TabsTrigger value="low">Low Stock</TabsTrigger>
+                    <TabsTrigger value="all">All Stock</TabsTrigger>
+                    <TabsTrigger value="location">Stock by Location</TabsTrigger>
+                    <TabsTrigger value="low">Low Stock</TabsTrigger>
                     <TabsTrigger value="movements">Stock Movements</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="location" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Stock Distribution</CardTitle>
+                            <CardDescription>View inventory levels across all locations</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Product</TableHead>
+                                        {locations.map(loc => <TableHead key={loc}>{loc}</TableHead>)}
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {products.map((product) => {
+                                        const stockDist = getStockByLocation(product.stock);
+                                        return (
+                                            <TableRow key={product.id}>
+                                                <TableCell className="font-medium">
+                                                    <div>{product.name}</div>
+                                                    <div className="text-xs text-muted-foreground">{product.sku}</div>
+                                                </TableCell>
+                                                {locations.map(loc => (
+                                                    <TableCell key={loc}>
+                                                        <Badge variant="outline">{stockDist[loc as keyof typeof stockDist]}</Badge>
+                                                    </TableCell>
+                                                ))}
+                                                <TableCell className="text-right">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setSelectedProductForTransfer(product.id);
+                                                            setShowTransferDialog(true);
+                                                        }}
+                                                    >
+                                                        Transfer
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
                 <TabsContent value="all" className="space-y-4">
                     <Card>
@@ -131,7 +243,7 @@ export default function InventoryPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {mockProducts.map((product) => (
+                                    {filteredProducts.map((product) => (
                                         <TableRow key={product.id}>
                                             <TableCell className="font-medium">{product.name}</TableCell>
                                             <TableCell className="font-mono text-sm">{product.sku}</TableCell>
@@ -150,14 +262,22 @@ export default function InventoryPage() {
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        onClick={() => handleStockAdjustment(product.id, 'add')}
+                                                        onClick={() => {
+                                                            setSelectedProductForAdjustment(product.id);
+                                                            setAdjustmentType('add');
+                                                            setShowAdjustmentDialog(true);
+                                                        }}
                                                     >
                                                         Add
                                                     </Button>
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        onClick={() => handleStockAdjustment(product.id, 'remove')}
+                                                        onClick={() => {
+                                                            setSelectedProductForAdjustment(product.id);
+                                                            setAdjustmentType('remove');
+                                                            setShowAdjustmentDialog(true);
+                                                        }}
                                                     >
                                                         Remove
                                                     </Button>
@@ -247,6 +367,107 @@ export default function InventoryPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
-        </div>
+            {/* Transfer Dialog */}
+            <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Transfer Stock</DialogTitle>
+                        <DialogDescription>Move inventory between locations</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>From Location</Label>
+                                <Select defaultValue="Warehouse">
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {locations.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>To Location</Label>
+                                <Select defaultValue="Main Store">
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {locations.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Quantity</Label>
+                            <Input type="number" placeholder="Enter quantity" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Reason (Optional)</Label>
+                            <Input placeholder="e.g. Restock request" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowTransferDialog(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                            toast.success('Stock transfer initiated successfully');
+                            setShowTransferDialog(false);
+                        }}>Confirm Transfer</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+
+            {/* Adjustment Dialog */}
+            < Dialog open={showAdjustmentDialog} onOpenChange={setShowAdjustmentDialog} >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{adjustmentType === 'add' ? 'Add Stock' : 'Remove Stock'}</DialogTitle>
+                        <DialogDescription>
+                            {adjustmentType === 'add' ? 'Record incoming inventory' : 'Record inventory write-off or loss'}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Quantity</Label>
+                            <Input
+                                type="number"
+                                placeholder="Enter quantity"
+                                value={adjustmentQty}
+                                onChange={(e) => setAdjustmentQty(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Reason</Label>
+                            <Select>
+                                <SelectTrigger><SelectValue placeholder="Select reason" /></SelectTrigger>
+                                <SelectContent>
+                                    {adjustmentType === 'add' ? (
+                                        <>
+                                            <SelectItem value="purchase">Purchase Order</SelectItem>
+                                            <SelectItem value="return">Customer Return</SelectItem>
+                                            <SelectItem value="found">Inventory Found</SelectItem>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SelectItem value="damage">Damaged/Expired</SelectItem>
+                                            <SelectItem value="theft">Theft/Loss</SelectItem>
+                                            <SelectItem value="correction">Count Correction</SelectItem>
+                                        </>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Notes (Optional)</Label>
+                            <Input placeholder="Additional details" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAdjustmentDialog(false)}>Cancel</Button>
+                        <Button variant={adjustmentType === 'remove' ? 'destructive' : 'default'} onClick={handleStockAdjustment}>
+                            Confirm {adjustmentType === 'add' ? 'Addition' : 'Removal'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog >
+        </div >
     );
 }

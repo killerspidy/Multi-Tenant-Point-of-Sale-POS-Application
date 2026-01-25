@@ -13,12 +13,14 @@ import DashboardPage from '@/pages/Dashboard/DashboardPage';
 import POSPage from '@/pages/POS/POSPage';
 import ProductsPage from '@/pages/Products/ProductsPage';
 import CustomersPage from '@/pages/Customers/CustomersPage';
+import CustomerDetailPage from '@/pages/Customers/CustomerDetailPage';
+import LoyaltyProgramPage from '@/pages/Customers/LoyaltyProgramPage';
 import ReportsPage from '@/pages/Reports/ReportsPage';
 import SettingsPage from '@/pages/Settings/SettingsPage';
 import InventoryPage from '@/pages/Inventory/InventoryPage';
 import ProcurementPage from '@/pages/Procurement/ProcurementPage';
 import PromotionsPage from '@/pages/Promotions/PromotionsPage';
-import StoresPage from '@/pages/Stores/StoresPage';
+
 import AuditLogsPage from '@/pages/AuditLogs/AuditLogsPage';
 import UserManagementPage from '@/pages/UserManagement/UserManagementPage';
 import SubscriptionPage from '@/pages/Subscription/SubscriptionPage';
@@ -28,9 +30,16 @@ import AnalyticsDashboardPage from '@/pages/Reports/AnalyticsDashboardPage';
 import UserProfilePage from '@/pages/Settings/UserProfilePage';
 import StoreManagerDashboard from '@/pages/Dashboard/StoreManagerDashboard';
 import HRManagementPage from '@/pages/HR/HRManagementPage';
+import BranchManagementPage from '@/pages/Admin/BranchManagementPage';
+import TenantSettingsPage from '@/pages/Admin/TenantSettingsPage';
+import PaymentGatewaysPage from '@/pages/Settings/PaymentGatewaysPage';
+import IntegrationSettingsPage from '@/pages/Settings/IntegrationSettingsPage';
 import HeldOrdersPage from '@/pages/POS/HeldOrdersPage';
 import LabelPrinterPage from '@/pages/Inventory/LabelPrinterPage';
 import PurchaseRequisitionPage from '@/pages/Procurement/PurchaseRequisitionPage';
+import GoodsReceiptPage from '@/pages/Procurement/GoodsReceiptPage';
+import ShiftManagementPage from '@/pages/POS/ShiftManagementPage';
+import ReturnRefundPage from '@/pages/POS/ReturnRefundPage';
 
 // Main app layout
 import MainAppLayout from '@/components/layouts/app/MainAppLayout';
@@ -136,6 +145,16 @@ export function AppRouter() {
                     }
                 />
                 <Route
+                    path="/customers/loyalty"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <LoyaltyProgramPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/customers"
                     element={
                         <ProtectedRoute>
@@ -146,11 +165,41 @@ export function AppRouter() {
                     }
                 />
                 <Route
+                    path="/customers/:id"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <CustomerDetailPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/reports"
                     element={
                         <ProtectedRoute>
                             <MainAppLayout>
                                 <ReportsPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/settings/payments"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <PaymentGatewaysPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/settings/integrations"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <IntegrationSettingsPage />
                             </MainAppLayout>
                         </ProtectedRoute>
                     }
@@ -200,7 +249,7 @@ export function AppRouter() {
                     element={
                         <ProtectedRoute>
                             <MainAppLayout>
-                                <StoresPage />
+                                <BranchManagementPage />
                             </MainAppLayout>
                         </ProtectedRoute>
                     }
@@ -221,6 +270,17 @@ export function AppRouter() {
                         <ProtectedRoute>
                             <MainAppLayout>
                                 <UserManagementPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings/tenant"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <TenantSettingsPage />
                             </MainAppLayout>
                         </ProtectedRoute>
                     }
@@ -279,6 +339,26 @@ export function AppRouter() {
 
                 {/* Advanced POS Features */}
                 <Route
+                    path="/pos/shift"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <ShiftManagementPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/pos/returns"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <ReturnRefundPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/pos/held-orders"
                     element={
                         <ProtectedRoute>
@@ -308,6 +388,16 @@ export function AppRouter() {
                         <ProtectedRoute>
                             <MainAppLayout>
                                 <PurchaseRequisitionPage />
+                            </MainAppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/procurement/goods-receipt"
+                    element={
+                        <ProtectedRoute>
+                            <MainAppLayout>
+                                <GoodsReceiptPage />
                             </MainAppLayout>
                         </ProtectedRoute>
                     }

@@ -13,9 +13,22 @@ import {
 } from '@/components/ui/table';
 import { mockCustomers, searchCustomers } from '@/mocks/data/customers';
 import { Search, Plus, Mail, Phone, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 export default function CustomersPage() {
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAddCustomerDialog, setShowAddCustomerDialog] = useState(false);
 
     const filteredCustomers = searchQuery
         ? searchCustomers(searchQuery)
@@ -28,10 +41,16 @@ export default function CustomersPage() {
                     <h1 className="text-3xl font-bold">Customers</h1>
                     <p className="text-muted-foreground">Manage your customer database</p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Customer
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => navigate('/customers/loyalty')}>
+                        <Award className="mr-2 h-4 w-4" />
+                        Loyalty Program
+                    </Button>
+                    <Button onClick={() => setShowAddCustomerDialog(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Customer
+                    </Button>
+                </div>
             </div>
 
             {/* Stats */}
@@ -148,7 +167,7 @@ export default function CustomersPage() {
                                             {new Date(customer.lastPurchase).toLocaleDateString()}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="sm">
+                                            <Button variant="ghost" size="sm" onClick={() => navigate(`/customers/${customer.id}`)}>
                                                 View
                                             </Button>
                                         </TableCell>
@@ -159,6 +178,46 @@ export default function CustomersPage() {
                     </Table>
                 </CardContent>
             </Card>
+            {/* Add Customer Dialog */}
+            <Dialog open={showAddCustomerDialog} onOpenChange={setShowAddCustomerDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add New Customer</DialogTitle>
+                        <DialogDescription>Create a new customer profile</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Full Name *</Label>
+                            <Input placeholder="e.g. Alice Smith" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Phone</Label>
+                                <Input placeholder="+1..." />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Email</Label>
+                                <Input type="email" placeholder="alice@example.com" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Address</Label>
+                            <Input placeholder="Mailing address" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Initial Loyalty Points</Label>
+                            <Input type="number" placeholder="0" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAddCustomerDialog(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                            toast.success('Customer added successfully');
+                            setShowAddCustomerDialog(false);
+                        }}>Create Customer</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

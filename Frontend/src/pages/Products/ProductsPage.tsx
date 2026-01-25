@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,9 +21,11 @@ import {
 } from '@/components/ui/select';
 import { mockProducts, getCategories, getLowStockProducts } from '@/mocks/data/products';
 import { Product } from '@/types';
-import { Search, Plus, AlertTriangle, Package } from 'lucide-react';
+import { Search, Plus, AlertTriangle, Package, Download, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProductsPage() {
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -45,6 +48,24 @@ export default function ProductsPage() {
         return matchesSearch && matchesCategory && matchesStatus;
     });
 
+    const handleExport = () => {
+        toast.success('Product catalog exported to CSV');
+    };
+
+    const handleImport = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                toast.success(`Importing products from ${file.name}...`);
+                setTimeout(() => toast.success('5 products imported successfully'), 1500);
+            }
+        };
+        input.click();
+    };
+
     const getStockBadge = (product: Product) => {
         if (product.stock === 0) {
             return <Badge variant="destructive">Out of Stock</Badge>;
@@ -62,10 +83,20 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold">Product Catalog</h1>
                     <p className="text-muted-foreground">Manage your inventory and products</p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Product
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleExport}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Export
+                    </Button>
+                    <Button variant="outline" onClick={handleImport}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Import
+                    </Button>
+                    <Button onClick={() => navigate('/products/new')}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Product
+                    </Button>
+                </div>
             </div>
 
             {/* Low Stock Alert */}
@@ -223,7 +254,7 @@ export default function ProductsPage() {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="sm">
+                                            <Button variant="ghost" size="sm" onClick={() => navigate(`/products/${product.id}`)}>
                                                 Edit
                                             </Button>
                                         </TableCell>

@@ -11,9 +11,27 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Plus, Gift, Percent, Calendar, Users } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 export default function PromotionsPage() {
+    const [showCreateDialog, setShowCreateDialog] = useState(false);
     const promotions = [
         { id: '1', name: 'Summer Sale', type: 'percentage', value: 20, startDate: '2026-06-01', endDate: '2026-08-31', status: 'scheduled', uses: 0 },
         { id: '2', name: 'Buy 2 Get 1 Free', type: 'bogo', value: 100, startDate: '2026-01-15', endDate: '2026-02-15', status: 'active', uses: 45 },
@@ -46,7 +64,7 @@ export default function PromotionsPage() {
                     <h1 className="text-3xl font-bold">Promotions & Discounts</h1>
                     <p className="text-muted-foreground">Create and manage promotional campaigns</p>
                 </div>
-                <Button>
+                <Button onClick={() => setShowCreateDialog(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create Promotion
                 </Button>
@@ -144,6 +162,59 @@ export default function PromotionsPage() {
                     </Table>
                 </CardContent>
             </Card>
+            {/* Create Promotion Dialog */}
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>Create New Promotion</DialogTitle>
+                        <DialogDescription>Set up a new discount or offer</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Promotion Name</Label>
+                            <Input placeholder="e.g. Summer Sale 2026" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Type</Label>
+                                <Select defaultValue="percentage">
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="percentage">Percentage Off</SelectItem>
+                                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                                        <SelectItem value="bogo">Buy X Get Y</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Value</Label>
+                                <Input type="number" placeholder="20" />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Start Date</Label>
+                                <Input type="date" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>End Date</Label>
+                                <Input type="date" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Minimum Spend (Optional)</Label>
+                            <Input type="number" placeholder="0.00" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                            toast.success('Promotion created successfully');
+                            setShowCreateDialog(false);
+                        }}>Create Campaign</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
