@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Banknote, CreditCard, Wallet, Smartphone, ArrowRight, Printer, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { formatCurrency } from '@/utils/formatters';
+
 interface PaymentModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -30,7 +32,6 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
     }, [open]);
 
     // Format helpers
-    const formatMoney = (val: number) => `$${val.toFixed(2)}`;
     const changeDue = Math.max(0, (parseFloat(cashTendered) || 0) - total);
     const remainingDue = Math.max(0, total - (parseFloat(cashTendered) || 0));
 
@@ -67,7 +68,7 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
                 <DialogHeader>
                     <DialogTitle className="flex justify-between items-center">
                         {step === 'receipt' ? 'Payment Successful' : 'Complete Payment'}
-                        {step !== 'receipt' && <span className="text-xl font-bold text-primary">{formatMoney(total)}</span>}
+                        {step !== 'receipt' && <span className="text-xl font-bold text-primary">{formatCurrency(total)}</span>}
                     </DialogTitle>
                     {step === 'receipt' && <DialogDescription>Order #ORD-123456 completed successfully</DialogDescription>}
                 </DialogHeader>
@@ -102,13 +103,13 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
                                 <div className="space-y-4">
                                     <div className="bg-muted p-4 rounded-lg text-center">
                                         <p className="text-sm text-muted-foreground mb-1">Total Due</p>
-                                        <p className="text-3xl font-bold">{formatMoney(total)}</p>
+                                        <p className="text-3xl font-bold">{formatCurrency(total)}</p>
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label className="text-base">Amount Tendered</Label>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                                             <Input
                                                 autoFocus
                                                 type="number"
@@ -121,14 +122,14 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
                                     </div>
 
                                     <div className="grid grid-cols-4 gap-2">
-                                        {[1, 5, 10, 20, 50, 100].map((amt) => (
+                                        {[10, 20, 50, 100, 200, 500].map((amt) => (
                                             <Button
                                                 key={amt}
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() => setCashTendered((prev) => (parseFloat(prev || '0') + amt).toString())}
                                             >
-                                                +${amt}
+                                                +{formatCurrency(amt)}
                                             </Button>
                                         ))}
                                         <Button variant="outline" size="sm" onClick={() => setCashTendered(total.toString())}>
@@ -142,7 +143,7 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
                                     {parseFloat(cashTendered) > total && (
                                         <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg flex justify-between items-center text-green-700 dark:text-green-400">
                                             <span className="font-semibold">Change Due</span>
-                                            <span className="text-xl font-bold">{formatMoney(changeDue)}</span>
+                                            <span className="text-xl font-bold">{formatCurrency(changeDue)}</span>
                                         </div>
                                     )}
                                 </div>
@@ -200,7 +201,7 @@ export default function PaymentModal({ open, onOpenChange, total, onComplete }: 
                             disabled={isProcessing || (method === 'cash' && remainingDue > 0)}
                             className="ml-auto"
                         >
-                            {isProcessing ? 'Processing...' : `Charge ${formatMoney(total)}`} <ArrowRight className="ml-2 h-4 w-4" />
+                            {isProcessing ? 'Processing...' : `Charge ${formatCurrency(total)}`} <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     )}
                 </DialogFooter>

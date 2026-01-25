@@ -3,7 +3,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import {
     ShoppingCart,
     LayoutDashboard,
@@ -16,9 +15,8 @@ import {
     Truck,
     Gift,
     FileText,
-    ChevronLeft,
-    ChevronRight,
 } from 'lucide-react';
+import { StoreSwitcher } from './StoreSwitcher';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -190,15 +188,12 @@ export default function Sidebar({ isOpen, isDesktopOpen = true, onClose }: Sideb
                         })}
                     </nav>
 
-                    {/* Footer Info */}
+                    {/* Footer Info / Store Switcher */}
                     <div className={cn(
                         "absolute bottom-4 left-0 right-0 px-6 transition-all duration-300",
                         isDesktopOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                     )}>
-                        <div className="bg-muted rounded-lg p-3 text-xs">
-                            <p className="font-semibold mb-1">Tenant ID</p>
-                            <p className="text-muted-foreground truncate">{user?.tenantId}</p>
-                        </div>
+                        <StoreSwitcher />
                     </div>
                 </ScrollArea>
             </aside>

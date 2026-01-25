@@ -22,6 +22,7 @@ export default function RegisterPage() {
         email: '',
         password: '',
         confirmPassword: '',
+        storeType: 'general' as 'general' | 'medical' | 'electronics' | 'fashion',
     });
 
     const passwordStrength = () => {
@@ -38,12 +39,22 @@ export default function RegisterPage() {
         e.preventDefault();
 
         if (step === 1) {
+            if (!formData.storeType) {
+                setError('Please select a business plan');
+                return;
+            }
+            setError('');
+            setStep(2);
+            return;
+        }
+
+        if (step === 2) {
             if (!formData.companyName) {
                 setError('Company name is required');
                 return;
             }
             setError('');
-            setStep(2);
+            setStep(3);
             return;
         }
 
@@ -93,9 +104,13 @@ export default function RegisterPage() {
                     <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         {step > 1 ? <Check className="w-4 h-4" /> : '1'}
                     </div>
-                    <div className={`h-1 w-16 ${step >= 2 ? 'bg-primary' : 'bg-muted'}`} />
+                    <div className={`h-1 w-8 ${step >= 2 ? 'bg-primary' : 'bg-muted'}`} />
                     <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                        2
+                        {step > 2 ? <Check className="w-4 h-4" /> : '2'}
+                    </div>
+                    <div className={`h-1 w-8 ${step >= 3 ? 'bg-primary' : 'bg-muted'}`} />
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                        3
                     </div>
                 </div>
 
@@ -103,12 +118,10 @@ export default function RegisterPage() {
                 <Card className="border-2">
                     <CardHeader>
                         <CardTitle>
-                            {step === 1 ? 'Business Information' : 'Account Details'}
+                            {step === 1 ? 'Business Plan' : step === 2 ? 'Business Info' : 'Account Details'}
                         </CardTitle>
                         <CardDescription>
-                            {step === 1
-                                ? 'Tell us about your business'
-                                : 'Create your admin account'}
+                            {step === 1 ? 'Select your store type' : step === 2 ? 'Tell us about your business' : 'Create your admin account'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -121,6 +134,53 @@ export default function RegisterPage() {
                             )}
 
                             {step === 1 ? (
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div
+                                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary ${formData.storeType === 'medical' ? 'border-primary bg-primary/5' : 'border-muted'}`}
+                                        onClick={() => setFormData({ ...formData, storeType: 'medical' })}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-green-100 text-green-700 rounded-md">
+                                                <AlertCircle className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold">Medical Store / Pharmacy</h3>
+                                                <p className="text-xs text-muted-foreground">Manage expiry dates, batches, and prescriptions.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary ${formData.storeType === 'electronics' ? 'border-primary bg-primary/5' : 'border-muted'}`}
+                                        onClick={() => setFormData({ ...formData, storeType: 'electronics' })}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-blue-100 text-blue-700 rounded-md">
+                                                <ShoppingCart className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold">Electronics & Gadgets</h3>
+                                                <p className="text-xs text-muted-foreground">Track Serial Numbers (IMEI) and warranties.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary ${formData.storeType === 'fashion' ? 'border-primary bg-primary/5' : 'border-muted'}`}
+                                        onClick={() => setFormData({ ...formData, storeType: 'fashion' })}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-purple-100 text-purple-700 rounded-md">
+                                                <User className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold">Fashion & Apparel</h3>
+                                                <p className="text-xs text-muted-foreground">Manage sizes, colors, and style variants.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : step === 2 ? (
                                 <div className="space-y-2">
                                     <Label htmlFor="companyName">Company Name</Label>
                                     <div className="relative">
@@ -211,12 +271,12 @@ export default function RegisterPage() {
                             )}
 
                             <div className="flex gap-2">
-                                {step === 2 && (
+                                {step > 1 && (
                                     <Button
                                         type="button"
                                         variant="outline"
                                         className="w-full"
-                                        onClick={() => setStep(1)}
+                                        onClick={() => setStep(step - 1)}
                                     >
                                         Back
                                     </Button>
@@ -227,7 +287,7 @@ export default function RegisterPage() {
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                             Creating account...
                                         </>
-                                    ) : step === 1 ? (
+                                    ) : step < 3 ? (
                                         'Continue'
                                     ) : (
                                         'Create Account'

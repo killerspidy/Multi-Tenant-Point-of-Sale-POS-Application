@@ -24,6 +24,8 @@ import PaymentModal from '@/components/pos/PaymentModal';
 import ActionDialog from '@/components/pos/ActionDialog';
 import CustomerSearchDialog from '@/components/pos/CustomerSearchDialog';
 
+import { formatCurrency } from '@/utils/formatters';
+
 export default function POSPage() {
     const navigate = useNavigate();
     const { products } = useData(); // Get dynamic products
@@ -100,7 +102,7 @@ export default function POSPage() {
         setShowVariationSelector(false);
     };
 
-    const handleCheckoutComplete = async (method: string, details?: any) => {
+    const handleCheckoutComplete = async (method: string, _details?: any) => {
         await processOrder(method);
     };
 
@@ -191,10 +193,17 @@ export default function POSPage() {
                                         </div>
                                         <h3 className="font-semibold text-sm line-clamp-2 h-10 leading-tight mb-1">{product.name}</h3>
                                         <div className="flex items-center justify-between mt-auto">
-                                            <span className="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
-                                            <Badge variant={product.stock > 10 ? 'secondary' : 'destructive'} className="text-[10px] px-1.5 h-5">
-                                                {product.stock}
-                                            </Badge>
+                                            <span className="text-lg font-bold text-primary">{formatCurrency(product.price)}</span>
+                                            <div className="flex gap-1">
+                                                <Badge variant={product.stock > 10 ? 'secondary' : 'destructive'} className="text-[10px] px-1.5 h-5">
+                                                    {product.stock}
+                                                </Badge>
+                                                {product.expiryDate && (
+                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5 border-orange-200 text-orange-700 bg-orange-50">
+                                                        Exp: {product.expiryDate}
+                                                    </Badge>
+                                                )}
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>

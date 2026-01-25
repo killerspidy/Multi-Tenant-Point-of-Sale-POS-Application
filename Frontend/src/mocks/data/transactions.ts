@@ -6,9 +6,11 @@ export const mockTransactions: Order[] = [
         createdAt: '2026-01-23T10:30:00', // Renamed from date
         paymentMethod: 'card',
         status: 'completed',
+        tenantId: 'tech_zone',
         items: [
             {
                 id: '1', // Added mock ID for CartItem compatibility
+                tenantId: 'tech_zone',
                 stock: 0, // Added mock stock
                 costPrice: 0, // Added mock cost
                 sku: 'W-MOUSE', // Added mock SKU
@@ -27,6 +29,7 @@ export const mockTransactions: Order[] = [
             },
             {
                 id: '4',
+                tenantId: 'tech_zone',
                 stock: 0,
                 costPrice: 0,
                 sku: 'NOTE-A5',
@@ -59,9 +62,11 @@ export const mockTransactions: Order[] = [
         createdAt: '2026-01-23T11:15:00',
         paymentMethod: 'upi',
         status: 'completed',
+        tenantId: 'tech_zone',
         items: [
             {
                 id: '3',
+                tenantId: 'tech_zone',
                 stock: 0,
                 costPrice: 0,
                 sku: 'BT-SPK',
@@ -94,9 +99,11 @@ export const mockTransactions: Order[] = [
         createdAt: '2026-01-23T12:00:00',
         paymentMethod: 'cash',
         status: 'completed',
+        tenantId: 'pharma_plus',
         items: [
             {
                 id: '8',
+                tenantId: 'pharma_plus',
                 stock: 0,
                 costPrice: 0,
                 sku: 'CHIPS',
@@ -115,6 +122,7 @@ export const mockTransactions: Order[] = [
             },
             {
                 id: '9',
+                tenantId: 'pharma_plus',
                 stock: 0,
                 costPrice: 0,
                 sku: 'CHOC',
@@ -147,9 +155,11 @@ export const mockTransactions: Order[] = [
         createdAt: '2026-01-22T15:45:00',
         paymentMethod: 'card',
         status: 'completed',
+        tenantId: 'pharma_plus',
         items: [
             {
                 id: '6',
+                tenantId: 'pharma_plus',
                 stock: 0,
                 costPrice: 0,
                 sku: 'COFFEE',
@@ -168,6 +178,7 @@ export const mockTransactions: Order[] = [
             },
             {
                 id: '7',
+                tenantId: 'pharma_plus',
                 stock: 0,
                 costPrice: 0,
                 sku: 'TEA',

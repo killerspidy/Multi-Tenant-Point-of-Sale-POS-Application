@@ -6,6 +6,7 @@ interface User {
     name: string;
     role: 'super_admin' | 'tenant_admin' | 'store_manager' | 'cashier' | 'inventory_manager' | 'report_analyst';
     tenantId: string;
+    storeType: 'general' | 'medical' | 'electronics' | 'fashion'; // SaaS Plan
     avatar?: string;
 }
 
@@ -23,6 +24,7 @@ interface RegisterData {
     password: string;
     name: string;
     companyName: string;
+    storeType: 'general' | 'medical' | 'electronics' | 'fashion';
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,6 +37,7 @@ const MOCK_USERS: User[] = [
         name: 'John Admin',
         role: 'tenant_admin',
         tenantId: 'tenant-1',
+        storeType: 'electronics',
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
     },
     {
@@ -43,6 +46,7 @@ const MOCK_USERS: User[] = [
         name: 'Sarah Manager',
         role: 'store_manager',
         tenantId: 'tenant-1',
+        storeType: 'electronics',
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
     },
     {
@@ -51,6 +55,7 @@ const MOCK_USERS: User[] = [
         name: 'Mike Cashier',
         role: 'cashier',
         tenantId: 'tenant-1',
+        storeType: 'electronics',
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
     },
 ];
@@ -105,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name: data.name,
             role: 'tenant_admin',
             tenantId: `tenant-${Date.now()}`,
+            storeType: data.storeType,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`,
         };
 

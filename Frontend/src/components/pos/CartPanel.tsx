@@ -1,11 +1,12 @@
-import { ShoppingCart, Plus, Minus, Trash2, CreditCard, User, Tag, FileText } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, CreditCard, User, Tag, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { usePOS } from '@/contexts/POSContext';
-import { formatCurrency } from '@/utils/formatters'; // Assuming we'll create this or use intl
+
+import { formatCurrency } from '@/utils/formatters';
 
 export default function CartPanel({ onCheckout, onCustomerSelect, onDiscount, onFee, onNote }: any) {
     const { cart, updateQuantity, removeItem, subtotal, totalTax, total, customer, totalDiscountAmount, totalFeeAmount } = usePOS();
@@ -35,7 +36,7 @@ export default function CartPanel({ onCheckout, onCustomerSelect, onDiscount, on
                             <span className="text-muted-foreground italic">Walk-in Customer</span>
                         )}
                     </div>
-                    <Button variant="ghost" size="xs" className="h-6 text-xs">Change</Button>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs">Change</Button>
                 </div>
             </CardHeader>
 
@@ -66,12 +67,32 @@ export default function CartPanel({ onCheckout, onCustomerSelect, onDiscount, on
                                         <div className="flex justify-between items-start">
                                             <h4 className="font-medium text-sm truncate pr-2">{item.name}</h4>
                                             <p className="font-semibold text-sm">
-                                                ${(item.price * item.quantity).toFixed(2)}
+                                                {formatCurrency(item.price * item.quantity)}
                                             </p>
                                         </div>
+                                        {/* Serial Number Input (Electronics) */}
+                                        {item.hasSerialNumber && (
+                                            <div className="mt-1">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter Serial/IMEI"
+                                                    className="w-full text-xs p-1 border rounded bg-background"
+                                                    defaultValue={item.serialNumber || ''}
+                                                />
+                                            </div>
+                                        )}
+                                        {/* Expiry Badge (Medical) */}
+                                        {item.expiryDate && (
+                                            <div className="mt-1 flex gap-1">
+                                                <Badge variant="outline" className="text-[10px] py-0 px-1 border-orange-200 text-orange-700 bg-orange-50">
+                                                    Exp: {item.expiryDate}
+                                                </Badge>
+                                                {item.batchNumber && <span className="text-[10px] text-muted-foreground">Batch: {item.batchNumber}</span>}
+                                            </div>
+                                        )}
                                         <div className="flex items-center justify-between mt-2">
                                             <p className="text-xs text-muted-foreground font-mono">
-                                                ${item.price.toFixed(2)} x {item.quantity}
+                                                {formatCurrency(item.price)} x {item.quantity}
                                             </p>
 
                                             <div className="flex items-center gap-1 bg-background rounded-md border px-1 shadow-sm">
@@ -127,28 +148,28 @@ export default function CartPanel({ onCheckout, onCustomerSelect, onDiscount, on
                     <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                             <span>Subtotal</span>
-                            <span>${subtotal.toFixed(2)}</span>
+                            <span>{formatCurrency(subtotal)}</span>
                         </div>
                         {totalDiscountAmount > 0 && (
                             <div className="flex justify-between text-green-600">
                                 <span>Discount</span>
-                                <span>-${totalDiscountAmount.toFixed(2)}</span>
+                                <span>-{formatCurrency(totalDiscountAmount)}</span>
                             </div>
                         )}
                         {totalFeeAmount > 0 && (
                             <div className="flex justify-between text-muted-foreground">
                                 <span>Fees</span>
-                                <span>+${totalFeeAmount.toFixed(2)}</span>
+                                <span>+{formatCurrency(totalFeeAmount)}</span>
                             </div>
                         )}
                         <div className="flex justify-between text-muted-foreground">
                             <span>Tax</span>
-                            <span>${totalTax.toFixed(2)}</span>
+                            <span>{formatCurrency(totalTax)}</span>
                         </div>
                         <Separator className="my-2" />
                         <div className="flex justify-between text-xl font-bold">
                             <span>Total</span>
-                            <span className="text-primary">${total.toFixed(2)}</span>
+                            <span className="text-primary">{formatCurrency(total)}</span>
                         </div>
                     </div>
 
@@ -160,7 +181,7 @@ export default function CartPanel({ onCheckout, onCustomerSelect, onDiscount, on
                     >
                         <div className="flex items-center justify-between w-full px-2">
                             <span>Checkout</span>
-                            <span>${total.toFixed(2)}</span>
+                            <span>{formatCurrency(total)}</span>
                         </div>
                     </Button>
                 </div>
